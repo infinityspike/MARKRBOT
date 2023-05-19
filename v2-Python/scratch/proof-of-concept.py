@@ -1,8 +1,8 @@
 from svg_to_gcode.svg_parser import parse_string
 from svg_to_gcode.compiler import Compiler, interfaces
-from MarkrbotGcode import MarkrbotGcode
+from scratch.MarkrbotGcode import MarkrbotGcode
 from xml.etree import ElementTree
-from SVGtransformAdapter import adaptSVGTransformElementsIntoPath
+from scratch.SVGtransformAdapter import adaptSVGTransformElementsIntoPath
 
 
 # Instantiate a compiler, specifying the interface type and the speed at which the tool should move. pass_depth controls

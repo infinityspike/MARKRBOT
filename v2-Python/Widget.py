@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 import xml.etree.ElementTree as ET
 from svg_to_gcode.svg_parser import parse_string
 from svg_to_gcode.compiler import Compiler
+from svg_to_gcode.geometry import Vector
 
 from MovementCommandCompiler import MovementCommandCompiler
 import MovementCommands as MC
@@ -9,13 +10,10 @@ import Constants
 
 class Widget(ABC) :
 
-    position_x:int
-    position_y:int
-    SVG:ET.Element
+    __slots__ = ("position","SVG")
 
     def __init__(self, pos_x:int, pos_y:int, svg:ET.Element) :
-        self.position_x = pos_x
-        self.position_y = pos_y
+        self.position = Vector(pos_x,pos_y)
         self.SVG = svg
 
     def parseMovementCommands(self) -> set[MC.LinearMovementCommand] :
@@ -34,8 +32,7 @@ class Widget(ABC) :
                 current_toolhead_action = item
 
             if isinstance(item, MC.LinearMovementCommand) :
-                item.setRefrenceX(self.position_x)
-                item.setRefrenceY(self.position_y)
+                item.setReference(self.position)
 
                 #Only record the actual movements that make lines on the board. 
                 #The Gcode to get into the starting position for all of the segments happens in the commandqueue

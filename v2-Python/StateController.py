@@ -75,7 +75,7 @@ class StateController :
         self.working.clear()
         self.working = dict.fromkeys(list(self.snapshot))
 
-    def syncronize(self) -> set :
+    def syncronize(self) -> set[set] :
         result_set = set.union(*self.working.values())
 
         #create new snapshot, remembering to remove completely deleted widgets
@@ -98,8 +98,9 @@ if __name__ == '__main__' :
     square2 = Widget(10,10,ET.fromstring('<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><path d="M 10 10 H 90 V 90 H 10 L 10 10"/></svg>'))
 
     controller.addWidget(square)
-    controller.syncronize()
-    controller.editWidget(square,square2)
-    controller.syncronize()
-    controller.deleteWidget(square2)
-    controller.syncronize()
+    controller.addWidget(square2)
+    print(controller.syncronize())
+    # controller.editWidget(square,square2)
+    # controller.syncronize()
+    # controller.deleteWidget(square2)
+    # controller.syncronize()

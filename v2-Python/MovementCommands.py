@@ -1,40 +1,31 @@
 import Constants
+
+from svg_to_gcode.geometry import Vector
 import math
-#import gpiozero
+import gpiozero
 
 class LinearMovementCommand :
 
-    __slots__ = ("true_start_x", "true_start_y", "true_end_x", "true_end_y","refrence_x","refrence_y")
+    __slots__ = ("start", "end","reference")
 
     def __init__(self, start_x:float, start_y:float, end_x:float, end_y:float) :
-        self.true_start_x = start_x
-        self.true_start_y = start_y
-        self.true_end_x = end_x
-        self.true_end_y = end_y
-        self.refrence_x = 0
-        self.refrence_y = 0
+        self.start = Vector(start_x, start_y)
+        self.end = Vector(end_x, end_y)
+        self.reference = Vector(0,0)
 
-    def setRefrenceX(self, x:float) :
-        if self.refrence_x != 0 :
-            self.true_start_x -= self.refrence_x
-            self.true_end_x -= self.refrence_x
-        self.refrence_x = x
-        self.true_start_x += self.refrence_x
-        self.true_end_x += self.refrence_x
-
-    def setRefrenceY(self, y:float) :
-        if self.refrence_y != 0 :
-            self.true_start_y -= self.refrence_y
-            self.true_end_y -= self.refrence_y
-        self.refrence_y = y
-        self.true_start_y += self.refrence_y
-        self.true_end_y += self.refrence_y
+    def setReference(self, point:Vector) :
+        if self.reference != Vector(0,0) :
+            self.start -= self.reference
+            self.end -= self.reference
+        self.reference = point
+        self.start += self.reference
+        self.end += self.reference
     
     def findLength(self) -> float :
-        return math.sqrt( ((self.true_start_x-self.true_end_x)**2) + ((self.true_start_y-self.true_end_y)**2) )
+        return math.sqrt( ((self.start.x-self.end.x)**2) + ((self.start.y-self.end.y)**2) )
     
-    def __str__(self) :
-        return " start: (" + str(self.true_start_x) + ", " + str(self.true_start_y) + ") end: (" + str(self.true_end_x) + ", " + str(self.true_end_y) + ") length: " + str(round(self.findLength(), 3))
+    def __repr__(self) :
+        return " start: (" + str(self.start.x) + ", " + str(self.start.y) + ") end: (" + str(self.end.x) + ", " + str(self.end.y) + ") length: " + str(round(self.findLength(), 3))
         
 
 
@@ -42,21 +33,18 @@ class LinearMovementCommand :
 class LinearMoveCommand(LinearMovementCommand) :
 
     def __init__(self, MovementCommand:LinearMovementCommand) :
-        self.true_start_x = MovementCommand.true_start_x
-        self.true_start_y = MovementCommand.true_start_y
-        self.true_end_x = MovementCommand.true_end_x
-        self.true_end_y = MovementCommand.true_end_y
-        self.refrence_x = MovementCommand.refrence_x
-        self.refrence_y = MovementCommand.refrence_y
+        self.start = MovementCommand.start
+        self.end = MovementCommand.end
+        self.reference = MovementCommand.reference
 
-    def toGcode(self) -> tuple[float,float,str] :
+    def toGcode(self) -> tuple[Vector,str] :
 
-        draw_string =  "G1 F" + str(Constants.MOVE_SPEED) + " X" + str(self.true_end_x) + " Y" + str(self.true_end_y) + ";"
+        draw_string =  "G1 F" + str(Constants.MOVE_SPEED) + " X" + str(self.end.x) + " Y" + str(self.end.y) + ";"
 
-        return (self.true_start_x, self.true_start_y, draw_string)
+        return (self.start, draw_string)
     
-    def __str__(self) :
-        return "MOVE start: (" + str(self.true_start_x) + ", " + str(self.true_start_y) + ") end: (" + str(self.true_end_x) + ", " + str(self.true_end_y) + ") length: " + str(round(self.findLength(), 3))
+    def __repr__(self) :
+        return "MOVE start: (" + str(self.start.x) + ", " + str(self.start.y) + ") end: (" + str(self.end.x) + ", " + str(self.end.y) + ") length: " + str(round(self.findLength(), 3))
         
 
 
@@ -64,18 +52,15 @@ class LinearMoveCommand(LinearMovementCommand) :
 class LinearDrawCommand(LinearMovementCommand) :
 
     def __init__(self, MovementCommand:LinearMovementCommand) :
-        self.true_start_x = MovementCommand.true_start_x
-        self.true_start_y = MovementCommand.true_start_y
-        self.true_end_x = MovementCommand.true_end_x
-        self.true_end_y = MovementCommand.true_end_y
-        self.refrence_x = MovementCommand.refrence_x
-        self.refrence_y = MovementCommand.refrence_y
+        self.start = MovementCommand.start
+        self.end = MovementCommand.end
+        self.reference = MovementCommand.reference
 
-    def toGcode(self) -> tuple[float,float,str] :
+    def toGcode(self) -> tuple[Vector,str] :
 
         draw_string =  "G1 F" + str(Constants.DRAW_SPEED) + " X" + str(self.true_end_x) + " Y" + str(self.true_end_y) + ";"
 
-        return (self.true_start_x, self.true_start_y, draw_string)
+        return (self.start, draw_string)
 
     def __str__(self) :
         return "DRAW start: (" + str(self.true_start_x) + ", " + str(self.true_start_y) + ") end: (" + str(self.true_end_x) + ", " + str(self.true_end_y) + ") length: " + str(round(self.findLength(), 3))
@@ -86,23 +71,20 @@ class LinearDrawCommand(LinearMovementCommand) :
 class LinearEraseCommand(LinearMovementCommand) :
 
     def __init__(self, MovementCommand:LinearMovementCommand) :
-        self.true_start_x = MovementCommand.true_start_x
-        self.true_start_y = MovementCommand.true_start_y
-        self.true_end_x = MovementCommand.true_end_x
-        self.true_end_y = MovementCommand.true_end_y
-        self.refrence_x = MovementCommand.refrence_x
-        self.refrence_y = MovementCommand.refrence_y
+        self.start = MovementCommand.start
+        self.end = MovementCommand.end
+        self.reference = MovementCommand.reference
 
-    def toGcode(self) -> tuple[float,float,str] :
+    def toGcode(self) -> tuple[Vector,str] :
 
-        erase_start_x = (self.true_start_x+Constants.MARKER_ERASER_DIST_X) 
-        erase_start_y = (self.true_start_y+Constants.MARKER_ERASER_DIST_Y)
-        erase_string =  "G1 F" + str(Constants.ERASE_SPEED) + " X" + str(self.true_end_x+Constants.MARKER_ERASER_DIST_X) + " Y" + str(self.true_end_y+Constants.MARKER_ERASER_DIST_Y) + ";"
+        erase_start_x = (self.start.x+Constants.MARKER_ERASER_DIST_X) 
+        erase_start_y = (self.start.y+Constants.MARKER_ERASER_DIST_Y)
+        erase_string =  "G1 F" + str(Constants.ERASE_SPEED) + " X" + str(self.end.x+Constants.MARKER_ERASER_DIST_X) + " Y" + str(self.end.y+Constants.MARKER_ERASER_DIST_Y) + ";"
         
-        return (erase_start_x, erase_start_y, erase_string)
+        return (Vector(erase_start_x, erase_start_y), erase_string)
     
     def __str__(self) :
-        return "ERASE start: (" + str(self.true_start_x) + ", " + str(self.true_start_y) + ") end: (" + str(self.true_end_x) + ", " + str(self.true_end_y) + ") length: " + str(round(self.findLength(), 3))
+        return "ERASE start: (" + str(self.start.x) + ", " + str(self.start.y) + ") end: (" + str(self.end.x) + ", " + str(self.end.y) + ") length: " + str(round(self.findLength(), 3))
         
     
 
@@ -112,8 +94,8 @@ class DrawCommand :
     def __init__(self) :
         return
     
-    # def execute(self, servo:gpiozero.AngularServo) :
-    #     self.servo.angle = Constants.SERVO_ANGLE_DRAW
+    def execute(self, servo:gpiozero.AngularServo) :
+        servo.angle = Constants.SERVO_ANGLE_DRAW
 
     def toGcode(self):
         return (None, None,"; MARKER DOWN")
@@ -125,8 +107,8 @@ class EraseCommand :
     def __init__(self) :
         return
 
-    # def execute(self, servo:gpiozero.AngularServo) :
-    #     self.servo.angle = Constants.SERVO_ANGLE_ERASE
+    def execute(self, servo:gpiozero.AngularServo) :
+        servo.angle = Constants.SERVO_ANGLE_ERASE
 
     def toGcode(self):
         return (None, None, "; ERASER DOWN")
@@ -138,8 +120,8 @@ class MoveCommand :
     def __init__(self) :
         return
 
-    # def execute(self, servo:gpiozero.AngularServo) :
-    #     self.servo.angle = Constants.SERVO_ANGLE_MOVE
+    def execute(self, servo:gpiozero.AngularServo) :
+        servo.angle = Constants.SERVO_ANGLE_MOVE
 
     def toGcode(self):
         return (None, None, "; MARKER/ERASER UP")

@@ -5,7 +5,7 @@ import sys
 sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 
 # Connect the socket to the port where the server is listening
-server_address = '/tmp/kllipy_uds'
+server_address = '/tmp/klippy_uds'
 print('connecting to %s' % server_address, file=sys.stderr)
 try:
     sock.connect(server_address)

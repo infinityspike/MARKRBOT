@@ -21,10 +21,10 @@ try:
     sock.sendall(str.encode(message))
 
     amount_received = 0
-    amount_expected = len(message)
+    amount_expected = 20
     
     while amount_received < amount_expected:
-        data = sock.recv(16)
+        data = sock.recv(32)
         amount_received += len(data)
         print('received "%s"' % data, file=sys.stderr)
 

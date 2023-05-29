@@ -18,7 +18,7 @@ try:
     # Send data
     message = '{"id": 123, "method": "info", "params": {}}'
     print('sending "%s"' % message, file=sys.stderr)
-    sock.sendall(message)
+    sock.sendall(str.encode(message))
 
     amount_received = 0
     amount_expected = len(message)

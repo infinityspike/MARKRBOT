@@ -27,6 +27,9 @@ try:
         if bytes.decode(data).endswith('\x03'): break
     print(bytes.decode(data), file=sys.stderr)
 
+    print('closing socket', file=sys.stderr)
+    sock.close()
+
 except KeyboardInterrupt:
     print("KeyboardInt")
     print('closing socket', file=sys.stderr)

@@ -16,7 +16,7 @@ except socket.error as msg :
 try:
     
     # Send data
-    message = '{"id": 123, "method": "info", "params": {}}'
+    message = '{"id": 123, "method": "info", "params": {}}\x03'
     print('sending "%s"' % message, file=sys.stderr)
     sock.sendall(str.encode(message))
 

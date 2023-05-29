@@ -21,10 +21,11 @@ try:
     print('sending "%s"' % message, file=sys.stderr)
     sock.sendall(str.encode(message))
 
-
+    data = ''
     while True:
-        data = sock.recv(32)
-        print('received "%s"' % data, file=sys.stderr)
+        data += sock.recv(32)
+        if bytes.decode(data).endswith('\x03'): break
+    print('received "%s"' % data, file=sys.stderr)
 
 except KeyboardInterrupt:
     print("KeyboardInt")

@@ -25,7 +25,7 @@ try:
     while True:
         data += sock.recv(32)
         if bytes.decode(data).endswith('\x03'): break
-    print('received "%s"' % data, file=sys.stderr)
+    print(bytes.decode(data), file=sys.stderr)
 
 except KeyboardInterrupt:
     print("KeyboardInt")

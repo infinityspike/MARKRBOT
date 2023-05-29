@@ -1,5 +1,6 @@
 import socket
 import sys
+import os
 
 # Create a UDS socket
 sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
@@ -20,14 +21,16 @@ try:
     print('sending "%s"' % message, file=sys.stderr)
     sock.sendall(str.encode(message))
 
-    amount_received = 0
-    amount_expected = 20
-    
-    while amount_received < amount_expected:
+
+    while True:
         data = sock.recv(32)
-        amount_received += len(data)
         print('received "%s"' % data, file=sys.stderr)
 
-finally:
+except KeyboardInterrupt:
+    print("KeyboardInt")
     print('closing socket', file=sys.stderr)
     sock.close()
+    try:
+        sys.exit()
+    except SystemExit:
+            os._exit(130)

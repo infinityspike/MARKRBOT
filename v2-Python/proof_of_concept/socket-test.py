@@ -21,7 +21,7 @@ try:
     print('sending "%s"' % message, file=sys.stderr)
     sock.sendall(str.encode(message))
 
-    data = ''
+    data = bytes()
     while True:
         data += sock.recv(32)
         if bytes.decode(data).endswith('\x03'): break

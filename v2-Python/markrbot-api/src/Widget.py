@@ -97,7 +97,16 @@ class TextWidget(Widget) :
         super().__init__(pos_x, pos_y, svg, deetz)
         self.parseTextSVG()
 
+    def __eq__(self, other) :
+        if not isinstance(other, TextWidget) : return False
+        if not (self.position.x == other.position.x) : return False
+        if not (self.position.y == other.position.y) : return False
+        if not (self.details == other.details) : return False
 
+        return True
+    
+    def __hash__(self) -> int:
+        return super().__hash__()
 
     def checkParamter(self, params:tuple[str,type]) -> bool :
         return isinstance(self.details[params[0]], params[1])
@@ -109,7 +118,7 @@ class TextWidget(Widget) :
         halign:str = self.details['halign']
         valign:str = self.details['valign']
         if not (halign == 'left' or halign == 'right' or halign == 'center') : raise Exception('halign must ne \"left\", \"right\", or \"center\"')
-        if not (valign == 'base' or halign == 'top' or halign == 'center') : raise Exception('halign must ne \"base\", \"top\", or \"center\"')
+        if not (valign == 'base' or valign == 'top' or valign == 'center') : raise Exception('halign must ne \"base\", \"top\", or \"center\"')
 
         font:str = self.details['font']
         if AVAILABLE_FONT_LIBRARY[font] == None : raise Exception(f"{font} is not an available font")

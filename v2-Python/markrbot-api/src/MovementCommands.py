@@ -27,7 +27,7 @@ class LinearMovementCommand :
         return math.sqrt( ((self.start.x-self.end.x)**2) + ((self.start.y-self.end.y)**2) )
     
     def __repr__(self) :
-        return " start: (" + str(self.start.x) + ", " + str(self.start.y) + ") end: (" + str(self.end.x) + ", " + str(self.end.y) + ") length: " + str(round(self.findLength(), 3))
+        return "      start: (" + str(self.start.x) + ", " + str(self.start.y) + ") end: (" + str(self.end.x) + ", " + str(self.end.y) + ") length: " + str(round(self.findLength(), 3))
         
 
 
@@ -46,7 +46,7 @@ class LinearMoveCommand(LinearMovementCommand) :
         return (self.start, draw_string)
     
     def __repr__(self) :
-        return "MOVE start: (" + str(self.start.x) + ", " + str(self.start.y) + ") end: (" + str(self.end.x) + ", " + str(self.end.y) + ") length: " + str(round(self.findLength(), 3)) 
+        return "MOVE  start: (" + str(self.start.x) + ", " + str(self.start.y) + ") end: (" + str(self.end.x) + ", " + str(self.end.y) + ") length: " + str(round(self.findLength(), 3)) 
 
 
 
@@ -64,7 +64,7 @@ class LinearDrawCommand(LinearMovementCommand) :
         return (self.start, draw_string)
 
     def __repr__(self) :
-        return "DRAW start: (" + str(self.start.x) + ", " + str(self.start.y) + ") end: (" + str(self.end.x) + ", " + str(self.end.y) + ") length: " + str(round(self.findLength(), 3))
+        return "DRAW  start: (" + str(self.start.x) + ", " + str(self.start.y) + ") end: (" + str(self.end.x) + ", " + str(self.end.y) + ") length: " + str(round(self.findLength(), 3))
         
 
 

@@ -16,12 +16,13 @@ def formatWidgetFromRequest() -> W.Widget :
         
         pos_x = contents['pos_x']
         pos_y = contents['pos_y']
-        svg = ET.fromstring(contents.get('svg'))
+        svg = contents.get('svg')
+        if svg != None : svg = ET.fromstring(svg)
         details = contents.get('details')
 
         if details == None :
             widget = W.Widget(pos_x, pos_y, svg, details)
-        elif contents['details']['type'] == 'text' :
+        elif details['type'] == 'text' :
             widget = W.TextWidget(pos_x, pos_y, details, svg)
         #elif contents['details']['type'] == '' : # :/ open/closed princliple yada yada
         #    widget = 
@@ -68,6 +69,15 @@ class WidgetApi(BaseApi):
         for command in all_movement_commands :
             str_commands.append(command.__repr__())
         return {"movement_commands" : str_commands}
+    
+    @expose('/revert', methods=['GET','POST','PUT','DELETE'])
+    def revertWidgets(self) :
+        state_controller.revert()
+        result = list()
+        for key in state_controller.working :
+            result.append(key.toJson())
+
+        return result
 
     
 

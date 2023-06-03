@@ -9,28 +9,34 @@ import gpiozero
 
 def optomizeMovementCommands(commands:set) -> list :
     #extremely basic optomization. 
-    # 
+    # CURRENTLY BROKEN -- Will not move to the correct starting position for new command after another command
     # pick a random command from the set
     # move from current position to the starting spot
     # execute command 
     # repeat
     result_list = list()
     current_position = Vector(0,0)
+    toolhead_state = None
 
     while commands :
         command:(MC.LinearDrawCommand|MC.LinearEraseCommand) = commands.pop()
 
         start, _ = command.toGcode()
-        result_list.append(MC.MoveCommand())
-        result_list.append(MC.LinearMoveCommand(MC.LinearMovementCommand(current_position.x,current_position.y,start.x,start.y)))
+        if current_position.x != start.x and current_position.y != start.y :
+            result_list.append(MC.MoveCommand())
+            toolhead_state = MC.MoveCommand
+            result_list.append(MC.LinearMoveCommand(MC.LinearMovementCommand(current_position.x,current_position.y,start.x,start.y)))
 
-        if isinstance(command, MC.LinearDrawCommand) :
+        if isinstance(command, MC.LinearDrawCommand) and toolhead_state != MC.DrawCommand :
             result_list.append(MC.DrawCommand())
-        elif isinstance(command, MC.LinearEraseCommand) :
+            toolhead_state = MC.DrawCommand
+        elif isinstance(command, MC.LinearEraseCommand) and toolhead_state != MC.EraseCommand :
             result_list.append(MC.EraseCommand())
+            toolhead_state = MC.EraseCommand
 
         result_list.append(command)
-        current_position = command.end
+        current_position.x = command.end.x
+        current_position.y = command.end.y
 
     return result_list
 

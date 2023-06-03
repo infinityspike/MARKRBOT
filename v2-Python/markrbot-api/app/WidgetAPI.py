@@ -1,12 +1,36 @@
 from flask import request, Response
 from flask_appbuilder.api import BaseApi, expose
 from flask_appbuilder.security.decorators import protect
-from . import appbuilder, state_controller, klipper_connection,
+from . import appbuilder, state_controller, klipper_connection
 
 import json
 import xml.etree.ElementTree as ET
-import src.Widget as W
 
+import src.Widget as W
+import src.MovementCommands as MC
+
+
+def formatWidgetFromRequest() -> W.Widget :
+    try :
+        contents:dict = request.get_json()
+        
+        pos_x = contents['pos_x']
+        pos_y = contents['pos_y']
+        svg = ET.fromstring(contents.get('svg'))
+        details = contents.get('details')
+
+        if details == None :
+            widget = W.Widget(pos_x, pos_y, svg, details)
+        elif contents['details']['type'] == 'text' :
+            widget = W.TextWidget(pos_x, pos_y, details, svg)
+        #elif contents['details']['type'] == '' : # :/ open/closed princliple yada yada
+        #    widget = 
+        else :
+            return Response('type not supported', 400)
+
+        return widget
+    except :
+        return Response("Must follow proper widget formatting details", 400)
 
 class WidgetApi(BaseApi):
 
@@ -23,34 +47,28 @@ class WidgetApi(BaseApi):
     
     @expose('/widget', methods=['POST'])
     def addWidget(self) :
-        try :
-            contents = request.get_json()
-            
-            pos_x = contents['pos_x']
-            pos_y = contents['pos_y']
+        widget = formatWidgetFromRequest()
+        if isinstance(widget,Response) : return widget
 
-            if contents['details']['type'] == 'text' :
-                widget = W.TextWidget(pos_x, pos_y, ET.fromstring(contents['details']), contents['svg'])
-            #elif contents['details']['type'] == '' : open/closed princliple yada yada
-            else :
-                widget = W.Widget(pos_x, pos_y, ET.fromstring(contents['svg']), contents['details'])
+        state_controller.addWidget(widget)
+        return widget.toJson()
 
+    @expose('/widget', methods=['DELETE'])
+    def deleteWidget(self) :
+        widget = formatWidgetFromRequest()
+        if isinstance(widget,Response) : return widget
 
-            state_controller.addWidget(widget)
-
-            return widget.toJson()
-        except :
-            return Response("Must follow proper widget formatting details", 400)
+        state_controller.deleteWidget(widget)
+        return widget.toJson()
         
     @expose('/sync', methods=['GET','POST','PUT','DELETE'])
     def syncWidgets(self) :
-        state_controller.syncronize()
+        all_movement_commands = state_controller.syncronize()
+        str_commands = list()
+        for command in all_movement_commands :
+            str_commands.append(command.__repr__())
+        return {"movement_commands" : str_commands}
 
-
-        
-        
-
-    
     
 
 

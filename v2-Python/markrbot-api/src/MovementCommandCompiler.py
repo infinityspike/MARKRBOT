@@ -1,6 +1,6 @@
 import warnings
 import math
-import MovementCommands
+import src.MovementCommands as MovementCommands
 
 from svg_to_gcode import formulas
 from svg_to_gcode.compiler.interfaces import Interface

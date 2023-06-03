@@ -1,8 +1,10 @@
-import Constants
+import src.Constants as Constants
 
 from svg_to_gcode.geometry import Vector
 import math
 import gpiozero
+
+
 
 class LinearMovementCommand :
 
@@ -44,8 +46,7 @@ class LinearMoveCommand(LinearMovementCommand) :
         return (self.start, draw_string)
     
     def __repr__(self) :
-        return "MOVE start: (" + str(self.start.x) + ", " + str(self.start.y) + ") end: (" + str(self.end.x) + ", " + str(self.end.y) + ") length: " + str(round(self.findLength(), 3))
-        
+        return "MOVE start: (" + str(self.start.x) + ", " + str(self.start.y) + ") end: (" + str(self.end.x) + ", " + str(self.end.y) + ") length: " + str(round(self.findLength(), 3)) 
 
 
 
@@ -58,14 +59,13 @@ class LinearDrawCommand(LinearMovementCommand) :
 
     def toGcode(self) -> tuple[Vector,str] :
 
-        draw_string =  "G1 F" + str(Constants.DRAW_SPEED) + " X" + str(self.true_end_x) + " Y" + str(self.true_end_y) + ";"
+        draw_string =  "G1 F" + str(Constants.DRAW_SPEED) + " X" + str(self.end.x) + " Y" + str(self.end.y) + ";"
 
         return (self.start, draw_string)
 
-    def __str__(self) :
-        return "DRAW start: (" + str(self.true_start_x) + ", " + str(self.true_start_y) + ") end: (" + str(self.true_end_x) + ", " + str(self.true_end_y) + ") length: " + str(round(self.findLength(), 3))
+    def __repr__(self) :
+        return "DRAW start: (" + str(self.start.x) + ", " + str(self.start.y) + ") end: (" + str(self.end.x) + ", " + str(self.end.y) + ") length: " + str(round(self.findLength(), 3))
         
-    
 
 
 class LinearEraseCommand(LinearMovementCommand) :
@@ -83,10 +83,9 @@ class LinearEraseCommand(LinearMovementCommand) :
         
         return (Vector(erase_start_x, erase_start_y), erase_string)
     
-    def __str__(self) :
+    def __repr__(self) :
         return "ERASE start: (" + str(self.start.x) + ", " + str(self.start.y) + ") end: (" + str(self.end.x) + ", " + str(self.end.y) + ") length: " + str(round(self.findLength(), 3))
         
-    
 
 
 class DrawCommand :
@@ -98,9 +97,10 @@ class DrawCommand :
         servo.angle = Constants.SERVO_ANGLE_DRAW
 
     def toGcode(self):
-        return (None, None,"; MARKER DOWN")
+        return (None, "; MARKER DOWN")
 
-
+    def __repr__(self) :
+        return "TOOLHEAD DRAW"
 
 class EraseCommand :
 
@@ -111,9 +111,10 @@ class EraseCommand :
         servo.angle = Constants.SERVO_ANGLE_ERASE
 
     def toGcode(self):
-        return (None, None, "; ERASER DOWN")
+        return (None, "; ERASER DOWN")
 
-
+    def __repr__(self) :
+        return "TOOLHEAD ERASE"
 
 class MoveCommand :
 
@@ -124,4 +125,7 @@ class MoveCommand :
         servo.angle = Constants.SERVO_ANGLE_MOVE
 
     def toGcode(self):
-        return (None, None, "; MARKER/ERASER UP")
+        return (None, "; MARKER/ERASER UP")
+
+    def __repr__(self) :
+        return "TOOLHEAD STANDBY"

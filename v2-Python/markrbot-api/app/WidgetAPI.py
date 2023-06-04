@@ -52,7 +52,7 @@ class WidgetApi(BaseApi):
         state_controller.addWidget(widget)
         return widget.toJson()
     
-    @expose('/widget', methods=['UPDATE'])
+    @expose('/widget', methods=['PUT'])
     def editWidget(self) :
         both:dict = request.get_json()
         if both.get('old') == None or both.get('new') == None : raise Exception("follow editwidget formatting", 400)

@@ -46,11 +46,10 @@ class Widget(ABC) :
 
     __slots__ = ("position","SVG","details")
 
-    def __init__(self, pos_x:int, pos_y:int, svg:ET.Element, deetz:dict=None) :
+    def __init__(self, pos_x:int, pos_y:int, svg:ET.Element) :
         self.position = Vector(pos_x,pos_y)
         self.SVG = svg
-        self.details = deetz
-
+        self.details = None
 
     def parseMovementCommands(self) -> set :
         result_set = set()
@@ -66,15 +65,15 @@ class Widget(ABC) :
         for item in compiler.body :
 
             #if toolhead change occurs, remember it
-            if isinstance(item, (MC.DrawCommand,MC.MoveCommand,MC.EraseCommand) ) :
+            if isinstance(item, (MC.ToolheadDraw,MC.ToolheadStandby,MC.ToolheadErase) ) :
                 current_toolhead_action = item
 
-            if isinstance(item, MC.LinearMovementCommand) :
+            if isinstance(item, MC.LineSegment) :
                 item.setReference(self.position)
 
                 #Only record the actual movements that make lines on the board. 
                 #The Gcode to get into the starting position for all of the segments happens in the commandqueue
-                if isinstance(current_toolhead_action, MC.DrawCommand) :
+                if isinstance(current_toolhead_action, MC.ToolheadDraw) :
                     result_set.add(item)
 
             
@@ -106,13 +105,16 @@ class TextWidget(Widget) :
     NAME = 'text'
     PARAMS = REQUIRED_TEXT_PARAMETERS
 
+    __slots__ = ("details")
+
     def checkType(self, details:dict) :
         if not details : raise Exception(f"{self.NAME} widget made without any details")
         if details.get('type') != self.NAME : raise Exception(f"{self.NAME} widget made without proper type specification")
 
-    def __init__(self, pos_x:int, pos_y:int, deetz:dict, svg:ET.Element=None) :
+    def __init__(self, pos_x:int, pos_y:int, deetz:dict) :
         self.checkType(deetz)
-        super().__init__(pos_x, pos_y, svg, deetz)
+        super().__init__(pos_x, pos_y, None)
+        self.details = deetz
         self.parseTextSVG()
 
     def __eq__(self, other) :
@@ -160,13 +162,16 @@ class NumberCounterWidget(Widget) :
     NAME = 'number-counter'
     PARAMS = REQUIRED_TEXT_COUNTER_PARAMETERS
 
+    __slots__ = ("details")
+
     def checkType(self, details:dict) :
         if not details : raise Exception(f"{self.NAME} widget made without any details")
         if details.get('type') != self.NAME : raise Exception(f"{self.NAME} widget made without proper type specification")
 
-    def __init__(self, pos_x:int, pos_y:int, deetz:dict, svg:ET.Element=None) :
+    def __init__(self, pos_x:int, pos_y:int, deetz:dict) :
         self.checkType(deetz)
-        super().__init__(pos_x, pos_y, svg, deetz)
+        super().__init__(pos_x, pos_y,)
+        self.details = deetz
         self.parseTextSVG()
 
     def __eq__(self, other) :

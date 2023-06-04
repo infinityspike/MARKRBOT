@@ -36,7 +36,7 @@ class MovementCommandCompiler(Interface):
         if y is None :
             y = self.position.y
 
-        MoveCommand = MovementCommands.LinearMovementCommand(round(self.position.x, self.precision), round(self.position.y,self.precision), round(x,self.precision), round(y, self.precision) )
+        MoveCommand = MovementCommands.LineSegment(round(self.position.x, self.precision), round(self.position.y,self.precision), round(x,self.precision), round(y, self.precision) )
 
 
         if self.position is not None or (x is not None and y is not None):
@@ -54,10 +54,10 @@ class MovementCommandCompiler(Interface):
         return MoveCommand
 
     def laser_off(self):
-        return MovementCommands.MoveCommand()
+        return MovementCommands.ToolheadStandby()
 
     def set_laser_power(self, power):
-        return MovementCommands.DrawCommand()
+        return MovementCommands.ToolheadDraw()
 
     def set_absolute_coordinates(self):
         return None

@@ -23,16 +23,16 @@ def optomizeMovementCommands(commands:set) -> list :
 
         start, _ = command.toGcode()
         if current_position.x != start.x and current_position.y != start.y :
-            result_list.append(MC.MoveCommand())
-            toolhead_state = MC.MoveCommand
-            result_list.append(MC.LinearMoveCommand(MC.LinearMovementCommand(current_position.x,current_position.y,start.x,start.y)))
+            result_list.append(MC.ToolheadStandby())
+            toolhead_state = MC.ToolheadStandby
+            result_list.append(MC.LinearMoveCommand(MC.LineSegment(current_position.x,current_position.y,start.x,start.y)))
 
-        if isinstance(command, MC.LinearDrawCommand) and toolhead_state != MC.DrawCommand :
-            result_list.append(MC.DrawCommand())
-            toolhead_state = MC.DrawCommand
-        elif isinstance(command, MC.LinearEraseCommand) and toolhead_state != MC.EraseCommand :
-            result_list.append(MC.EraseCommand())
-            toolhead_state = MC.EraseCommand
+        if isinstance(command, MC.LinearDrawCommand) and toolhead_state != MC.ToolheadDraw :
+            result_list.append(MC.ToolheadDraw())
+            toolhead_state = MC.ToolheadDraw
+        elif isinstance(command, MC.LinearEraseCommand) and toolhead_state != MC.ToolheadErase :
+            result_list.append(MC.ToolheadErase())
+            toolhead_state = MC.ToolheadErase
 
         result_list.append(command)
         current_position.x = command.end.x

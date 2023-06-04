@@ -26,15 +26,18 @@ class StateController :
 
     def editWidget(self, old:Widget, new:Widget) :
         #check if old exists in snapshot or working, if it doesn't dont do anything
-        if old not in self.working and old not in self.snapshot : return
+        in_working = None
+        for key in self.working :
+            if old == key : in_working = key
+        if in_working == None : return 
 
-        #if its only in working and not written on board yet, remove and replace
-        if old in self.working and old not in self.snapshot :
-            self.working.pop(old)
-            self.addWidget(new)
+        in_snapshot = None
+        for key in self.snapshot :
+            if old == key : in_snapshot = key
+        if in_snapshot == None : return 
 
         # if its already on the board
-        elif old in self.snapshot :
+        if (not in_snapshot == None) :
             old_commands = old.parseMovementCommands()
             new_commands = new.parseMovementCommands()
             draw_commands = set()
@@ -49,8 +52,13 @@ class StateController :
             for command in old_commands :
                 erase_commands.add(MC.LinearEraseCommand(command))
 
-            self.working.pop(old)
+            self.working.pop(in_working)
             self.working[new] = draw_commands.union(erase_commands)
+        
+        #if its only in working and not written on board yet, remove and replace
+        elif (not in_working == None) :
+            self.working.pop(in_working)
+            self.addWidget(new)
 
     def deleteWidget(self, old:Widget) :
         #check if old exists in working, if it doesn't dont do anything

@@ -6,7 +6,7 @@ import gpiozero
 
 
 
-class LinearMovementCommand :
+class LineSegment :
 
     __slots__ = ("start", "end","reference")
 
@@ -32,14 +32,14 @@ class LinearMovementCommand :
 
 
 
-class LinearMoveCommand(LinearMovementCommand) :
+class LinearMoveCommand(LineSegment) :
 
-    def __init__(self, MovementCommand:LinearMovementCommand) :
+    def __init__(self, MovementCommand:LineSegment) :
         self.start = MovementCommand.start
         self.end = MovementCommand.end
         self.reference = MovementCommand.reference
 
-    def toGcode(self) -> tuple[Vector,str] :
+    def toGcode(self) -> tuple[Vector, str] :
 
         draw_string =  "G1 F" + str(Constants.MOVE_SPEED) + " X" + str(self.end.x) + " Y" + str(self.end.y) + ";"
 
@@ -50,9 +50,9 @@ class LinearMoveCommand(LinearMovementCommand) :
 
 
 
-class LinearDrawCommand(LinearMovementCommand) :
+class LinearDrawCommand(LineSegment) :
 
-    def __init__(self, MovementCommand:LinearMovementCommand) :
+    def __init__(self, MovementCommand:LineSegment) :
         self.start = MovementCommand.start
         self.end = MovementCommand.end
         self.reference = MovementCommand.reference
@@ -68,9 +68,9 @@ class LinearDrawCommand(LinearMovementCommand) :
         
 
 
-class LinearEraseCommand(LinearMovementCommand) :
+class LinearEraseCommand(LineSegment) :
 
-    def __init__(self, MovementCommand:LinearMovementCommand) :
+    def __init__(self, MovementCommand:LineSegment) :
         self.start = MovementCommand.start
         self.end = MovementCommand.end
         self.reference = MovementCommand.reference
@@ -88,7 +88,7 @@ class LinearEraseCommand(LinearMovementCommand) :
         
 
 
-class DrawCommand :
+class ToolheadDraw :
 
     def __init__(self) :
         return
@@ -102,7 +102,7 @@ class DrawCommand :
     def __repr__(self) :
         return "TOOLHEAD DRAW"
 
-class EraseCommand :
+class ToolheadErase :
 
     def __init__(self) :
         return
@@ -116,7 +116,7 @@ class EraseCommand :
     def __repr__(self) :
         return "TOOLHEAD ERASE"
 
-class MoveCommand :
+class ToolheadStandby :
 
     def __init__(self) :
         return

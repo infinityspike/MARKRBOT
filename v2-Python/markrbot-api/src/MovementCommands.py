@@ -41,7 +41,7 @@ class LinearMoveCommand(LineSegment) :
 
     def toGcode(self) -> tuple[Vector, str] :
 
-        draw_string =  "G1 F" + str(Constants.MOVE_SPEED) + " X" + str(self.end.x) + " Y" + str(self.end.y) + ";"
+        draw_string =  "G0 F" + str(Constants.MOVE_SPEED) + " X" + str(self.end.x) + " Y" + str(self.end.y) + ";"
 
         return (self.start, draw_string)
     
@@ -59,7 +59,7 @@ class LinearDrawCommand(LineSegment) :
 
     def toGcode(self) -> tuple[Vector,str] :
 
-        draw_string =  "G1 F" + str(Constants.DRAW_SPEED) + " X" + str(self.end.x) + " Y" + str(self.end.y) + ";"
+        draw_string =  "G0 F" + str(Constants.DRAW_SPEED) + " X" + str(self.end.x) + " Y" + str(self.end.y) + ";"
 
         return (self.start, draw_string)
 
@@ -79,7 +79,7 @@ class LinearEraseCommand(LineSegment) :
 
         erase_start_x = (self.start.x+Constants.MARKER_ERASER_DIST_X) 
         erase_start_y = (self.start.y+Constants.MARKER_ERASER_DIST_Y)
-        erase_string =  "G1 F" + str(Constants.ERASE_SPEED) + " X" + str(self.end.x+Constants.MARKER_ERASER_DIST_X) + " Y" + str(self.end.y+Constants.MARKER_ERASER_DIST_Y) + ";"
+        erase_string =  "G0 F" + str(Constants.ERASE_SPEED) + " X" + str(self.end.x+Constants.MARKER_ERASER_DIST_X) + " Y" + str(self.end.y+Constants.MARKER_ERASER_DIST_Y) + ";"
         
         return (Vector(erase_start_x, erase_start_y), erase_string)
     

@@ -32,15 +32,21 @@ class CommandQueue :
 
             start, _ = command.toGcode()
             if current_position.x != start.x and current_position.y != start.y :
-                result_list.append(MC.ToolheadStandby(self.servo))
+                standby = MC.ToolheadStandby()
+                standby.setServo(self.servo)
+                result_list.append(standby)
                 toolhead_state = MC.ToolheadStandby
                 result_list.append(MC.LinearMoveCommand(MC.LineSegment(current_position.x,current_position.y,start.x,start.y)))
 
             if isinstance(command, MC.LinearDrawCommand) and toolhead_state != MC.ToolheadDraw :
-                result_list.append(MC.ToolheadDraw(self.servo))
+                draw = MC.ToolheadDraw()
+                draw.setServo(self.servo)
+                result_list.append(draw)
                 toolhead_state = MC.ToolheadDraw
             elif isinstance(command, MC.LinearEraseCommand) and toolhead_state != MC.ToolheadErase :
-                result_list.append(MC.ToolheadErase(self.servo))
+                erase = MC.ToolheadErase()
+                erase.setServo(self.servo)
+                result_list.append(erase)
                 toolhead_state = MC.ToolheadErase
 
             result_list.append(command)
@@ -50,11 +56,9 @@ class CommandQueue :
         return result_list
     
     def checkForOutOfBoundCommands(self, commands:set) -> None : # could certainly be more elegant
-        commands_copy = commands.copy()
 
-        while commands_copy :
-
-            command:(MC.LinearDrawCommand|MC.LinearEraseCommand) = commands_copy.pop()
+        for command in commands :
+            command:(MC.LinearDrawCommand|MC.LinearEraseCommand)
 
             if command.start.x < Constants.MIN_X : raise Exception(f"command \"{command}\" is out of bounds")
             if command.start.x > Constants.MAX_X : raise Exception(f"command \"{command}\" is out of bounds")
@@ -79,12 +83,14 @@ class CommandQueue :
         for command in ordered_move_commands :
             self.queue.put(command)
 
+        #self.executeAllCommads()
+
         return ordered_move_commands
     
     def executeSingleCommand(self) :
         command = self.queue.get()
 
-        if issubclass(command, MC.LineSegment) :
+        if isinstance(command, MC.LineSegment) :
             self.klipper.sendMessage(
                 {
                     "id" : 420,
@@ -92,7 +98,7 @@ class CommandQueue :
                     "params" : {"script" : command.toGcode()[1]}
                 }
             )
-        elif issubclass(command, MC.ToolheadCommand) :
+        elif isinstance(command, MC.ToolheadCommand) :
             command.execute()
 
     def executeAllCommads(self) :

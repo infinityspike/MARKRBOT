@@ -54,10 +54,10 @@ class MovementCommandCompiler(Interface):
         return MoveCommand
 
     def laser_off(self):
-        return None
+        return MovementCommands.ToolheadStandby()
 
     def set_laser_power(self, power):
-        return None
+        return MovementCommands.ToolheadDraw()
 
     def set_absolute_coordinates(self):
         return None

@@ -1,5 +1,5 @@
 import logging
-import gpiozero
+# import gpiozero
 
 from flask import Flask
 from flask_appbuilder import AppBuilder, SQLA

@@ -1,5 +1,5 @@
 DRAW_SPEED = 600
-MOVE_SPEED = 1000
+MOVE_SPEED = 2000
 ERASE_SPEED = 400
 
 MARKER_ERASER_DIST_X = 0 #distance from the marker to eraser on the Y-carrige; plane offset

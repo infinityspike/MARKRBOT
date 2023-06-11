@@ -83,6 +83,11 @@ class CommandQueue :
         for command in ordered_move_commands :
             self.queue.put(command)
 
+        self.executeCommandsWithFluff()
+        
+        return ordered_move_commands
+    
+    def executeCommandsWithFluff(self) :
         #home & 0,0
         self.klipper.sendMessage({ "id" : 420, "method" : "gcode/script", "params" : {"script" : f"G28 X0 Y{Constants.BOARD_SIZE_Y}"} })
         self.klipper.sendMessage({ "id" : 421, "method" : "gcode/script", "params" : {"script" : f"G90"} })
@@ -90,7 +95,10 @@ class CommandQueue :
 
         self.executeAllCommads()
 
-        return ordered_move_commands
+        standby = MC.ToolheadStandby()
+        standby.setServo(self.servo)
+        standby.execute()
+        self.klipper.sendMessage({ "id" : 420, "method" : "gcode/script", "params" : {"script" : f"G0 X0 Y0"} })
     
     def executeSingleCommand(self) :
         command = self.queue.get()
@@ -105,6 +113,7 @@ class CommandQueue :
             )
         elif isinstance(command, MC.ToolheadCommand) :
             command.execute()
+    
 
     def executeAllCommads(self) :
         while not self.queue.empty() :

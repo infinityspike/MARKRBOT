@@ -76,7 +76,7 @@ class WidgetApi(BaseApi):
         all_movement_commands = state_controller.syncronize()
         str_commands = list()
         for command in all_movement_commands :
-            str_commands.append(command.__repr__())
+            str_commands.append(command.__repr__() + "====" + command.toGcode()[1])
         return {"movement_commands" : str_commands}
     
     @expose('/revert', methods=['GET','POST','PUT','DELETE'])

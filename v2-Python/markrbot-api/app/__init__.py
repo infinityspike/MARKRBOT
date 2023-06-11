@@ -1,5 +1,5 @@
 import logging
-# import gpiozero
+import gpiozero
 
 from flask import Flask
 from flask_appbuilder import AppBuilder, SQLA
@@ -32,7 +32,7 @@ klipper_connection.sendMessage(
         "id" : 420,
         "method" : "gcode/script",
         "params" : {
-            "script" : "G28 X0 Y0; G90"
+            "script" : "G28 X0 Y0; G90; G0 X0 Y0 F600"
         }
     }
 )

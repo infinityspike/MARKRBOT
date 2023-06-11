@@ -29,7 +29,9 @@ class KlipperSocket :
         data = str()
         while True:
             data += bytes.decode(self.socket_conn.recv(32))
-            if data.endswith('\x03'): break
+            if data.endswith('\x03'): 
+                data = data.rstrip('\x03')
+                break
         return json.loads(data)
 
 if __name__ == '__main__' :

@@ -27,6 +27,15 @@ import src.Constants as Constants
 from xml.etree import ElementTree as ET
 
 klipper_connection = KlipperSocket(Constants.KLIPPY_SOCKET_ADDRESS)
+klipper_connection.sendMessage(
+    {
+        "id" : 420,
+        "method" : "gcode/script",
+        "params" : {
+            "script" : "G28 X0 Y0; G90"
+        }
+    }
+)
 #toolhead_servo = gpiozero.AngularServo(Constants.SERVO_GPIO_PIN)
 command_queue = CommandQueue(klipper_connection,None)#toolhead_servo)
 state_controller = StateController(command_queue)

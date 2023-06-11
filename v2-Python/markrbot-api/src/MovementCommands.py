@@ -86,15 +86,23 @@ class LinearEraseCommand(LineSegment) :
     def __repr__(self) :
         return "ERASE start: (" + str(self.start.x) + ", " + str(self.start.y) + ") end: (" + str(self.end.x) + ", " + str(self.end.y) + ") length: " + str(round(self.findLength(), 3))
         
+class ToolheadCommand :
+
+    __slots__ = ("servo")
+
+    def __init__(self, servo:gpiozero.AngularServo) :
+        self.servo = servo
 
 
-class ToolheadDraw :
 
-    def __init__(self) :
-        return
+
+class ToolheadDraw(ToolheadCommand) :
+
+    def __init__(self, servo:gpiozero.AngularServo) :
+        super().__init__(servo)
     
-    def execute(self, servo:gpiozero.AngularServo) :
-        servo.angle = Constants.SERVO_ANGLE_DRAW
+    def execute(self) :
+        self.servo.angle = Constants.SERVO_ANGLE_DRAW
 
     def toGcode(self):
         return (None, "; MARKER DOWN")
@@ -102,13 +110,13 @@ class ToolheadDraw :
     def __repr__(self) :
         return "TOOLHEAD DRAW"
 
-class ToolheadErase :
+class ToolheadErase(ToolheadCommand) :
 
-    def __init__(self) :
-        return
+    def __init__(self, servo:gpiozero.AngularServo) :
+        super().__init__(servo)
 
-    def execute(self, servo:gpiozero.AngularServo) :
-        servo.angle = Constants.SERVO_ANGLE_ERASE
+    def execute(self) :
+        self.servo.angle = Constants.SERVO_ANGLE_ERASE
 
     def toGcode(self):
         return (None, "; ERASER DOWN")
@@ -116,13 +124,13 @@ class ToolheadErase :
     def __repr__(self) :
         return "TOOLHEAD ERASE"
 
-class ToolheadStandby :
+class ToolheadStandby(ToolheadCommand) :
 
-    def __init__(self) :
-        return
+    def __init__(self, servo:gpiozero.AngularServo) :
+        super().__init__(servo)
 
-    def execute(self, servo:gpiozero.AngularServo) :
-        servo.angle = Constants.SERVO_ANGLE_MOVE
+    def execute(self) :
+        self.servo.angle = Constants.SERVO_ANGLE_MOVE
 
     def toGcode(self):
         return (None, "; MARKER/ERASER UP")

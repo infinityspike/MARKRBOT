@@ -32,12 +32,12 @@ klipper_connection.sendMessage(
         "id" : 420,
         "method" : "gcode/script",
         "params" : {
-            "script" : "G28 X0 Y0; G90; G0 X0 Y0 F600"
+            "script" : f"G28 X0 Y{Constants.BOARD_SIZE_Y}; G90; G0 X0 Y0 F600"
         }
     }
 )
-#toolhead_servo = gpiozero.AngularServo(Constants.SERVO_GPIO_PIN)
-command_queue = CommandQueue(klipper_connection,None)#toolhead_servo)
+toolhead_servo = gpiozero.AngularServo(Constants.SERVO_GPIO_PIN)
+command_queue = CommandQueue(klipper_connection, toolhead_servo)
 state_controller = StateController(command_queue)
 
 state_controller.addWidget(Widget(0,0,ET.fromstring('<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><path d="M 10 10 H 90 V 90 H 10 L 10 10"/></svg>')))

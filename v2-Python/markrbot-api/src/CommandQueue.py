@@ -1,7 +1,7 @@
 from __future__ import annotations
 from src.KlipperSocket import KlipperSocket
 import src.MovementCommands as MC
-import Constants
+import src.Constants as Constants
 
 from svg_to_gcode.geometry import Vector
 import queue

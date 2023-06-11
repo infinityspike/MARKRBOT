@@ -41,3 +41,4 @@ if __name__ == '__main__' :
         "params" : {}
     }
     info_response = klipper.sendMessage(info)
+    print(info_response)

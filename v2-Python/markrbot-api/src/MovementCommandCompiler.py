@@ -53,6 +53,12 @@ class MovementCommandCompiler(Interface):
 
         return MoveCommand
 
+    def laser_off(self):
+        return None
+
+    def set_laser_power(self, power):
+        return None
+
     def set_absolute_coordinates(self):
         return None
 

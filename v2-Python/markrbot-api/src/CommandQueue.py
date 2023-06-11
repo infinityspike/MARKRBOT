@@ -83,7 +83,12 @@ class CommandQueue :
         for command in ordered_move_commands :
             self.queue.put(command)
 
-        #self.executeAllCommads()
+        #home & 0,0
+        self.klipper.sendMessage({ "id" : 420, "method" : "gcode/script", "params" : {"script" : f"G28 X0 Y{Constants.BOARD_SIZE_Y}"} })
+        self.klipper.sendMessage({ "id" : 421, "method" : "gcode/script", "params" : {"script" : f"G90"} })
+        self.klipper.sendMessage({ "id" : 420, "method" : "gcode/script", "params" : {"script" : f"G0 X0 Y0"} })
+
+        self.executeAllCommads()
 
         return ordered_move_commands
     

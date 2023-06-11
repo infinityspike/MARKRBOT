@@ -2,8 +2,8 @@ DRAW_SPEED = 600
 MOVE_SPEED = 1000
 ERASE_SPEED = 400
 
-MARKER_ERASER_DIST_X = 2.25 #distance from the marker to eraser on the Y-carrige; plane offset
-MARKER_ERASER_DIST_Y = 1.25 #in mm
+MARKER_ERASER_DIST_X = 0 #distance from the marker to eraser on the Y-carrige; plane offset
+MARKER_ERASER_DIST_Y = 10 #in mm
 
 BOARD_SIZE_X = 1125
 BOARD_SIZE_Y = 735

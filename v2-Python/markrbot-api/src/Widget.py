@@ -33,10 +33,10 @@ REQUIRED_TEXT_COUNTER_PARAMETERS = [
 ]
 AVAILABLE_FONT_LIBRARY = {
     'Oswald' : ziafont.Font(),
-    'Arizona' : ziafont.Font('~/MARKRBOT/v2-Python/markrbot-api/src/fonts/Arizonia-Regular.ttf'),
-    'Great Vibes' : ziafont.Font('~/MARKRBOT/v2-Python/markrbot-api/src/fonts/GreatVibes-Regular.otf'),
-    'Open Sans' : ziafont.Font('~/MARKRBOT/v2-Python/markrbot-api/src/fonts/OpenSans-Regular.ttf'),
-    'Roman' : ziafont.Font('~/MARKRBOT/v2-Python/markrbot-api/src/fonts/roman_font_7.ttf')
+    'Arizona' : ziafont.Font('./src/fonts/Arizonia-Regular.ttf'),
+    'Great Vibes' : ziafont.Font('./src/fonts/GreatVibes-Regular.otf'),
+    'Open Sans' : ziafont.Font('./src/fonts/OpenSans-Regular.ttf'),
+    'Roman' : ziafont.Font('./src/fonts/roman_font_7.ttf')
 }
 
 

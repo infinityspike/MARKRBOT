@@ -27,31 +27,42 @@ class CommandQueue :
         current_position = Vector(0,0)
         toolhead_state = None
 
+        draw = MC.ToolheadDraw()
+        draw.setServo(self.servo)
+
+        standby = MC.ToolheadStandby()
+        standby.setServo(self.servo)
+
+        erase = MC.ToolheadErase()
+        erase.setServo(self.servo)
+
         while commands :
             command:(MC.LinearDrawCommand|MC.LinearEraseCommand) = commands.pop()
 
             start, _ = command.toGcode()
-            if current_position.x != start.x and current_position.y != start.y :
-                standby = MC.ToolheadStandby()
-                standby.setServo(self.servo)
-                result_list.append(standby)
-                toolhead_state = MC.ToolheadStandby
-                result_list.append(MC.LinearMoveCommand(MC.LineSegment(current_position.x,current_position.y,start.x,start.y)))
-
+            # if current_position.x != start.x and current_position.y != start.y :
+            #     standby = MC.ToolheadStandby()
+            #     standby.setServo(self.servo)
+            #     result_list.append(standby)
+            #     toolhead_state = MC.ToolheadStandby
+            #     result_list.append(MC.LinearMoveCommand(MC.LineSegment(current_position.x,current_position.y,start.x,start.y)))
+            result_list.append(standby)
+            result_list.append(MC.LinearMoveCommand(MC.LineSegment(0,0,start.x,start.y)))
+                                                    
             if isinstance(command, MC.LinearDrawCommand) and toolhead_state != MC.ToolheadDraw :
-                draw = MC.ToolheadDraw()
-                draw.setServo(self.servo)
-                result_list.append(draw)
                 toolhead_state = MC.ToolheadDraw
+                result_list.append(draw)
             elif isinstance(command, MC.LinearEraseCommand) and toolhead_state != MC.ToolheadErase :
-                erase = MC.ToolheadErase()
-                erase.setServo(self.servo)
-                result_list.append(erase)
                 toolhead_state = MC.ToolheadErase
+                result_list.append(erase)
 
             result_list.append(command)
-            current_position.x = command.end.x
-            current_position.y = command.end.y
+            # current_position.x = command.end.x
+            # current_position.y = command.end.y
+            result_list.append(standby)
+            result_list.append(MC.LinearMoveCommand(MC.LineSegment(command.end.x,command.end.y,0,0)))
+
+
 
         return result_list
     

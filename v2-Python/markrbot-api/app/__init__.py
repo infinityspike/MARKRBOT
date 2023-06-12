@@ -27,7 +27,6 @@ import src.Constants as Constants
 from xml.etree import ElementTree as ET
 
 klipper_connection = KlipperSocket(Constants.KLIPPY_SOCKET_ADDRESS)
-gpiozero.Device.pin_factory  = gpiozero.pins.pigpio.PiGPIOFactory()
 toolhead_servo = gpiozero.AngularServo(Constants.SERVO_GPIO_PIN)
 command_queue = CommandQueue(klipper_connection, toolhead_servo)
 state_controller = StateController(command_queue)

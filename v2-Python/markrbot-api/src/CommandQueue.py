@@ -47,6 +47,7 @@ class CommandQueue :
             #     toolhead_state = MC.ToolheadStandby
             #     result_list.append(MC.LinearMoveCommand(MC.LineSegment(current_position.x,current_position.y,start.x,start.y)))
             result_list.append(standby)
+            toolhead_state = MC.ToolheadStandby
             result_list.append(MC.LinearMoveCommand(MC.LineSegment(0,0,start.x,start.y)))
                                                     
             if isinstance(command, MC.LinearDrawCommand) and toolhead_state != MC.ToolheadDraw :
@@ -60,6 +61,7 @@ class CommandQueue :
             # current_position.x = command.end.x
             # current_position.y = command.end.y
             result_list.append(standby)
+            toolhead_state = MC.ToolheadStandby
             result_list.append(MC.LinearMoveCommand(MC.LineSegment(command.end.x,command.end.y,0,0)))
 
 

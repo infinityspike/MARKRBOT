@@ -1,11 +1,11 @@
-from __future__ import annotations
-from src.KlipperSocket import KlipperSocket
-import src.MovementCommands as MC
-import src.Constants as Constants
+# from __future__ import annotations
+# from src.KlipperSocket import KlipperSocket
+# import src.MovementCommands as MC
+# import src.Constants as Constants
 
-from svg_to_gcode.geometry import Vector
-import queue
-import gpiozero
+# from svg_to_gcode.geometry import Vector
+# import queue
+# import gpiozero
 
 class CommandQueue :
     
@@ -68,6 +68,73 @@ class CommandQueue :
 
         return result_list
     
+    def groupMovementCommands(self, starts:dict, ends:dict) -> list[list] :
+        """
+        starts "start Vector : [LineSegment]"
+        ends "LineSegment : end Vector"
+        return " [[line1,line3,line2], [line6,line4], [line5]]
+        
+        """
+        all_line_chains:list[list] = list()
+        current_line_chain = list()
+
+        while ends :
+            #start weith a random command
+            current_command, current_end = ends.popitem()
+            current_line_chain.append(current_command)
+
+            # if another command has the same start point as that commands end point, add it and repeat process
+            # if there are multiple commands that have the same start point, choose one arbitrarily
+            next_possible_commands:list = starts[current_end]
+            next_command = next_possible_commands.pop()
+            # if the command selected is the last command in the list, pop the list from the dict
+            if not next_possible_commands : starts.pop(current_end)
+
+            while next_command :
+                # if the command that was chosen next is already in a chain, add the current chain to the start of the found chain
+                for line_chain in all_line_chains :
+                    if next_command == line_chain[0] :
+                        line_chain = current_line_chain.extend(line_chain)
+                        found_extendable_chain = True
+                        break
+                if found_extendable_chain : break
+
+                current_line_chain.append(next_command)
+
+                next_command_end = ends.pop(next_command)
+                next_commands:list = starts[next_command_end]
+                next_command = next_commands.pop()
+                if not next_commands : starts.pop(current_end)
+            # once that line chain is broken(last commands end has no other commands start), start again with a new random command
+            all_line_chains.append(current_line_chain)
+            current_line_chain.clear()
+
+                
+
+        return
+    
+
+    def collectMovementCommands(self, commands:set) -> dict :
+        start_dict = dict()
+        end_dict = dict()
+
+        for command in commands :
+            if start_dict[command.start] :
+                start_dict[command.start].append(command)
+            else :
+                start_dict[command.start] = [command]
+            end_dict[command] = command.end
+
+        return self.groupMovementCommands(start_dict, end_dict)
+    
+
+    def optomizeMovementCommands(self, commands:set) -> list :
+        dict_commands = self.collectMovementCommands(commands) 
+
+        return
+
+    
+
     def checkForOutOfBoundCommands(self, commands:set) -> None : # could certainly be more elegant
 
         for command in commands :
@@ -131,5 +198,19 @@ class CommandQueue :
     def executeAllCommads(self) :
         while not self.queue.empty() :
             self.executeSingleCommand()
+
+if __name__ == '__main__' :
+    test_queue = CommandQueue(None, None)
+
+    test_set = {
+        MC.LineSegment(0,0, 1,0),
+        MC.LineSegment(1,0, 1,1),
+        MC.LineSegment(1,0, 1,-1),
+        MC.LineSegment(1,-1, 2,-1),
+        MC.LineSegment(2,-1, 2,0),
+        MC.LineSegment(2,-1, 2,-2)
+    }
+
+    print(test_queue.collectMovementCommands(test_set))
 
         

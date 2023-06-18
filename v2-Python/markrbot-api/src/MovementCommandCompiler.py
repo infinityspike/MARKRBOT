@@ -1,10 +1,11 @@
 import warnings
 import math
+
 import src.MovementCommands as MovementCommands
+from src.MovementCommands import Vector
 
 from svg_to_gcode import formulas
 from svg_to_gcode.compiler.interfaces import Interface
-from svg_to_gcode.geometry import Vector
 from svg_to_gcode import TOLERANCES
 
 verbose = False

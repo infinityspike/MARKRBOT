@@ -1,9 +1,21 @@
 import src.Constants as Constants
 
-from svg_to_gcode.geometry import Vector
 import math
 import gpiozero
 
+from svg_to_gcode.geometry import Vector as Vect
+
+class Vector(Vect) :
+    def __key(self):
+        return (self.x, self.y)
+
+    def __hash__(self):
+        return hash(self.__key())
+
+    def __eq__(self, other):
+        if isinstance(other, Vector):
+            return self.__key() == other.__key()
+        return NotImplemented
 
 
 class LineSegment :
@@ -27,7 +39,7 @@ class LineSegment :
         return math.sqrt( ((self.start.x-self.end.x)**2) + ((self.start.y-self.end.y)**2) )
     
     def __repr__(self) :
-        return "      start: (" + str(self.start.x) + ", " + str(self.start.y) + ") end: (" + str(self.end.x) + ", " + str(self.end.y) + ") length: " + str(round(self.findLength(), 3))
+        return "(" + str(self.start.x) + ", " + str(self.start.y) + ")->(" + str(self.end.x) + ", " + str(self.end.y) + ")"# length: " + str(round(self.findLength(), 3))
         
 
 
@@ -46,7 +58,7 @@ class LinearMoveCommand(LineSegment) :
         return (self.start, draw_string)
     
     def __repr__(self) :
-        return "MOVE  start: (" + str(self.start.x) + ", " + str(self.start.y) + ") end: (" + str(self.end.x) + ", " + str(self.end.y) + ") length: " + str(round(self.findLength(), 3)) 
+        return "MOVE (" + str(self.start.x) + ", " + str(self.start.y) + ")->(" + str(self.end.x) + ", " + str(self.end.y) + ")"# length: " + str(round(self.findLength(), 3)) 
 
 
 
@@ -64,7 +76,7 @@ class LinearDrawCommand(LineSegment) :
         return (self.start, draw_string)
 
     def __repr__(self) :
-        return "DRAW  start: (" + str(self.start.x) + ", " + str(self.start.y) + ") end: (" + str(self.end.x) + ", " + str(self.end.y) + ") length: " + str(round(self.findLength(), 3))
+        return "DRAW (" + str(self.start.x) + ", " + str(self.start.y) + ")->(" + str(self.end.x) + ", " + str(self.end.y) + ")"# length: " + str(round(self.findLength(), 3))
         
 
 
@@ -84,7 +96,7 @@ class LinearEraseCommand(LineSegment) :
         return (Vector(erase_start_x, erase_start_y), erase_string)
     
     def __repr__(self) :
-        return "ERASE start: (" + str(self.start.x) + ", " + str(self.start.y) + ") end: (" + str(self.end.x) + ", " + str(self.end.y) + ") length: " + str(round(self.findLength(), 3))
+        return "ERASE (" + str(self.start.x) + ", " + str(self.start.y) + ")->(" + str(self.end.x) + ", " + str(self.end.y) + ")"# length: " + str(round(self.findLength(), 3))
         
 class ToolheadCommand :
 

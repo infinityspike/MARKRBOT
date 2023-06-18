@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import xml.etree.ElementTree as ET
 from svg_to_gcode.svg_parser import parse_string
 from svg_to_gcode.compiler import Compiler
-from svg_to_gcode.geometry import Vector
+from src.MovementCommands import Vector
 
 import ziafont
 ziafont.config.svg2 = False

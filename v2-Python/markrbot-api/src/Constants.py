@@ -25,3 +25,5 @@ SERVO_ANGLE_MAX = 90
 SERVO_GPIO_PIN = 12 #pin must be PWM capable
 
 KLIPPY_SOCKET_ADDRESS = '/tmp/klippy_uds'
+
+ARBITRARILY_SMALL_DISTANCE = 3

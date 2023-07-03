@@ -157,7 +157,7 @@ class CommandQueue :
 
         return self.groupMovementCommands(start_dict, end_dict)
 
-    def arbitrarilySmallDistanceOptomizer(self, chains:list[list[MC.LineSegment]]) -> list[list] :
+    def arbitrarilySmallDistanceOptomizer(self, chains:list[list[MC.LineSegment]]) -> list[list[MC.LinearMoveCommand|MC.LinearDrawCommand|MC.LinearEraseCommand]] :
         """
         if the end of one line chain and the start of another line chain 
         are close enough together, treat them as a single line chain
@@ -172,7 +172,7 @@ class CommandQueue :
         for chain in chains :
             for other in chains :
                 if chain != other and findDistanceTo(chain[chain.__len__()-1].end, other[0].start) <= Constants.ARBITRARILY_SMALL_DISTANCE :
-                    chain.append(MC.LinearMoveCommand(MC.LineSegment(chain[chain.__len__()-1].end.x, chain[chain.__len__()-1].end.y, other[0].start.x, other[0].start.y)))
+                    # chain.append(MC.LinearMoveCommand(MC.LineSegment(chain[chain.__len__()-1].end.x, chain[chain.__len__()-1].end.y, other[0].start.x, other[0].start.y)))
                     chain.extend(other)
                     chains_to_remove.append(other)
             for removal in chains_to_remove :
@@ -183,9 +183,44 @@ class CommandQueue :
 
 
     def optomizeMovementCommands(self, commands:set) -> list :
+
+        result_list = list()
+        current_position = Vector(0,0)
+        toolhead_state = MC.ToolheadStandby
+
+        draw = MC.ToolheadDraw()
+        draw.setServo(self.servo)
+
+        standby = MC.ToolheadStandby()
+        standby.setServo(self.servo)
+
+        erase = MC.ToolheadErase()
+        erase.setServo(self.servo)
+
         line_chains = self.collectMovementCommands(commands) 
         extended_line_chains = self.arbitrarilySmallDistanceOptomizer(line_chains)
-        return
+
+        for chain in extended_line_chains :
+            for line in chain :
+                start, _ = line.toGcode()
+                if start != current_position :
+                    result_list.append(standby)
+                    toolhead_state = MC.ToolheadStandby
+                    result_list.append(MC.LinearMoveCommand(MC.LineSegment(current_position.x,current_position.y,start.x,start.y)))
+                                                        
+                if isinstance(line, MC.LinearDrawCommand) and toolhead_state != MC.ToolheadDraw :
+                    toolhead_state = MC.ToolheadDraw
+                    result_list.append(draw)
+                elif isinstance(line, MC.LinearEraseCommand) and toolhead_state != MC.ToolheadErase :
+                    toolhead_state = MC.ToolheadErase
+                    result_list.append(erase)
+
+                result_list.append(line)
+                current_position.x = line.end.x
+                current_position.y = line.end.y
+
+
+        return result_list
 
     
 
